@@ -145,6 +145,7 @@ class ThriftConnection(Connection):
     def establish_connection(self):
         if self.transport is None:
             socket = TSocket.TSocket(self.host, self.port)
+            socket.setTimeout(self.socket_timeout)
             self.transport = TTransport.TFramedTransport(socket)
 
         if not self.transport.isOpen():

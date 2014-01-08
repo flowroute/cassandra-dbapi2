@@ -39,7 +39,7 @@ class ConnectionPool(object):
     """
     def __init__(self, hostname, port=9160, keyspace=None, username=None,
                  password=None, decoder=None, max_conns=25, max_idle=5,
-                 eviction_delay=10000):
+                 eviction_delay=10000, socket_timeout=2000):
         self.hostname = hostname
         self.port = port
         self.keyspace = keyspace
@@ -49,6 +49,7 @@ class ConnectionPool(object):
         self.max_conns = max_conns
         self.max_idle = max_idle
         self.eviction_delay = eviction_delay
+        self.socket_timeout = socket_timeout
         
         self.connections = Queue()
         self.connections.put(self.__create_connection())
@@ -62,7 +63,8 @@ class ConnectionPool(object):
                           keyspace=self.keyspace,
                           username=self.username,
                           password=self.password,
-                          decoder=self.decoder)
+                          decoder=self.decoder,
+                          socket_timeout=self.socket_timeout)
         
     def borrow_connection(self):
         try:

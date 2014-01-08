@@ -798,6 +798,7 @@ class NativeConnection(Connection):
         self.conn_ready = False
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((self.host, self.port))
+        s.settimeout(self.sockettimeout/1000.0)
         self.socketf = s.makefile(bufsize=0)
         self.sockfd = s
         self.open_socket = True
