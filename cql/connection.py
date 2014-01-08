@@ -20,7 +20,7 @@ class Connection(object):
     cql_major_version = 3
 
     def __init__(self, host, port, keyspace, user=None, password=None, cql_version=None,
-                 compression=None, consistency_level="ONE", transport=None):
+                 compression=None, consistency_level="ONE", transport=None, socket_timeout=2000):
         """
         Params:
         * host ...............: hostname of Cassandra node.
@@ -42,6 +42,7 @@ class Connection(object):
         *                       overridable on per-query basis.
         * transport...........: Thrift transport to use (optional);
         *                       not applicable to NativeConnection.
+        * socket_timeout......: Timeout value for underlying TSocket in ms
         """
         self.host = host
         self.port = port
@@ -50,6 +51,7 @@ class Connection(object):
         self.compression = compression
         self.consistency_level = consistency_level
         self.transport = transport
+        self.socket_timeout = socket_timeout
         self.open_socket = False
 
         self.credentials = None
@@ -101,7 +103,7 @@ class Connection(object):
 # TODO: Pull connections out of a pool instead.
 def connect(host, port=None, keyspace=None, user=None, password=None,
             cql_version=None, native=False, compression=None,
-            consistency_level="ONE", transport=None):
+            consistency_level="ONE", transport=None, socket_timeout=2000):
     """
     Create a connection to a Cassandra node.
 
@@ -124,6 +126,8 @@ def connect(host, port=None, keyspace=None, user=None, password=None,
                 "EACH_QUORUM" and "ALL"; overridable on per-query basis.
     @param transport If set, use this Thrift transport instead of creating one;
                 doesn't apply to native connections.
+    @param socket_timeout The timeout value for socket connection in ms
+
 
     @returns a Connection instance of the appropriate subclass.
     """
@@ -140,4 +144,5 @@ def connect(host, port=None, keyspace=None, user=None, password=None,
             port = 9160
     return connclass(host, port, keyspace, user, password,
                      cql_version=cql_version, compression=compression,
-                     consistency_level=consistency_level, transport=transport)
+                     consistency_level=consistency_level, transport=transport,
+                     socket_timeout=socket_timeout)
